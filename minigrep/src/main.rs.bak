@@ -1,0 +1,35 @@
+// 首先通过 use 引入标准库中的 env 包，然后 env::args 方法会读取并分析传入的命令行参数，
+// 最终通过 collect 方法输出一个集合类型 Vector。
+//
+// 可能有同学疑惑，为啥不直接引入 args ，例如 use std::env::args ，
+// 这样就无需 env::args 来繁琐调用，直接args.collect() 即可。
+// 原因很简单，args 方法只会使用一次，啰嗦就啰嗦点吧，
+// 把相同的好名字让给 let args.. 这位大哥不好吗？毕竟人家要出场多次的。
+use std::{env, fs};
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    //collect 方法其实并不是std::env包提供的，而是迭代器自带的方法(env::args() 会返回一个迭代器)，
+    // 它会将迭代器消费后转换成我们想要的集合类型，关于迭代器和 collect 的具体介绍，请参考这里。
+    // 最后，代码中使用 dbg! 宏来输出读取到的数组内容，来看看长啥样：
+    // dbg!(args);
+
+    //上面两个版本分别是无参数和两个参数，其中无参数版本实际上也会读取到一个字符串，仔细看，是不是长得很像我们的程序名，
+    // Bingo! env::args 读取到的参数中第一个就是程序的可执行路径名。
+
+    let query = &args[1];
+    let file_path = &args[2];
+    println!("Searching for {}", query);
+    println!("In file {}", file_path);
+
+    let connects = fs::read_to_string(file_path)
+        .expect("Should have been able to read the file");
+    //在 Rust 语言中，expect 是一个用于处理 Result 类型的方法。expect 方法接受一个字符串作为参数，
+    // 当 Result 类型的值为 Err 时，会将这个字符串作为错误信息打印出来，并终止程序运行。
+    // 当 Result 类型的值为 Ok 时，expect 方法会返回 Ok 中的值。
+    // 在你的代码中，fs::read_to_string(file_path) 返回的是一个 Result 类型，其中 Ok 包含了读取到的文件内容，
+    // 而 Err 包含了一个错误信息。通过调用 expect 方法，你在程序出现错误时会打印出自定义的错误信息，以便更好地了解发生了什么问题。
+    // 在你的代码中，.expect("Should have been able to read the file") 表示如果读取文件的操作失败，
+    // 会打印出 "Should have been able to read the file" 这个错误信息。
+    println!("With text:\n{connects}")
+
+}
