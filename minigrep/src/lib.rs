@@ -1,6 +1,5 @@
-use std::error::Error;
 use std::{env, fs};
-use std::env::args;
+use std::error::Error;
 
 pub struct Config {
     pub query: String,
